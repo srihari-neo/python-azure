@@ -1,8 +1,18 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import random
 
 app = FastAPI()
+
+# Add CORS middleware to allow requests from your frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow your frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Existing endpoints
 @app.get("/")
@@ -13,12 +23,12 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-# New random meme endpoint
+# Random meme endpoint
 @app.get("/meme")
 async def get_random_meme():
     async with httpx.AsyncClient() as client:
         try:
-            # GIPHY API endpoint for trending GIFs (no API key needed for public access)
+            # GIPHY API endpoint for trending GIFs
             response = await client.get(
                 "https://api.giphy.com/v1/gifs/trending",
                 params={"api_key": "A5d47snFXb4KUCaGiWwaawkOKdiWqmjh", "limit": 50}
